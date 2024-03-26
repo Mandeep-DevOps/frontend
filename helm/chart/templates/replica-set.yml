@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: {{ .Values.component }}
+  labels:
+    app: {{ .Values.component }}
+spec:
+  replicas: {{ .Values.replica }}
+  selector:
+    matchLabels:
+      app: {{ .Values.component }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.component }}
+    spec:
+      initContainers:
+        - name: parameters-pull
+          image: {{ .Values.initContainers.parameters_pull.image }}
+          imagePullPolicy: {{ .Values.initContainers.parameters_pull.imagePullPolicy }}
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "150Mi"
+              cpu: "100m"
+      containers:
+        - name: {{ .Values.component }}
+          image: {{ .Values.containers.main.image }}
+          imagePullPolicy: {{ .Values.containers.main.imagePullPolicy }}
+
